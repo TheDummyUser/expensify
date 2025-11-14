@@ -1,45 +1,66 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import { StatusBar, useColorScheme } from 'react-native';
 import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
+	SafeAreaProvider,
 } from 'react-native-safe-area-context';
 
+import Layout from './src/components/Layout';
+import { AuthNav } from './src/navigation';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const TransparentLightTheme = {
+	...DefaultTheme,
+	colors: {
+		...DefaultTheme.colors,
+		background: 'transparent',
+		card: 'transparent',
+	},
+};
+
+const TransparentDarkTheme = {
+	...DarkTheme,
+	colors: {
+		...DarkTheme.colors,
+		background: 'transparent',
+		card: 'transparent',
+	},
+};
+
+const queryClient = new QueryClient()
+
+import { SessionProvider, useSession } from './src/context/SessionProvider';
+import { AfterAutnNav } from './src/navigation';
+
+
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+	const isDarkMode = useColorScheme() === 'dark';
 
-  return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
+	return (
+		<QueryClientProvider client={queryClient}  >
+			<SessionProvider>
+				<SafeAreaProvider>
+					<Layout>
+						<StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+						<Nav />
+					</Layout>
+				</SafeAreaProvider>
+			</SessionProvider>
+		</QueryClientProvider>
+	);
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
 
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
+const Nav = () => {
+	const isDarkMode = useColorScheme() === 'dark';
+	const { session } = useSession()
+	return (
+		<NavigationContainer theme={isDarkMode ? TransparentDarkTheme : TransparentLightTheme}>
+			{session ? <AfterAutnNav /> : <AuthNav />}
+		</NavigationContainer>
+	)
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+
+
 
 export default App;
