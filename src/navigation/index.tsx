@@ -1,25 +1,42 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Signup from "../screens/Signup";
-import Login from "../screens/Login";
-import Home from "../screens/Home";
-import { createNativeBottomTabNavigator } from "@react-navigation/bottom-tabs/unstable";
-import { useTheme } from "../utils/theme";
-export type AuthStackParamList = {
-	signup: undefined;
-	login: undefined;
-	home: undefined;
-};
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs"
+import Signup from "../screens/Signup"
+import Login from "../screens/Login"
+import { NavigationContainer } from "@react-navigation/native"
+import { useTheme } from "../utils/theme"
+import Home from "../screens/Home"
+import { useSession } from "../context/SessionProvider"
+
+import { fonts, fontSize } from "../utils/fonts"
+import MyTabBar from "./MyTabBar"
+import CustomHeader from "../components/CustomHeader"
+import Expenses from "../screens/Expenses"
+import Profile from "../screens/Profile"
+import HeaderBack from "../components/HeaderBack"
 
 
-const AuthStack = createNativeStackNavigator<AuthStackParamList>()
-const baseStack = createNativeStackNavigator()
-const Tab = createNativeBottomTabNavigator()
-export const AuthNav = () => {
+export const RootNav = () => {
+	const { session } = useSession()
 	return (
-		<AuthStack.Navigator screenOptions={{ headerShown: false, animation: "fade" }}  >
+		<NavigationContainer >
+			{session ? <AfterAutnNav /> : <AuthNav />}
+		</NavigationContainer>
+	)
+}
+
+export const AuthNav = () => {
+	const AuthStack = createNativeStackNavigator()
+	const theme = useTheme();
+	return (
+		<AuthStack.Navigator
+			screenOptions={{
+				headerShown: false,
+				contentStyle: { backgroundColor: theme.background },
+			}}
+		>
+
 			<AuthStack.Screen name="signup" component={Signup} />
 			<AuthStack.Screen name="login" component={Login} />
-
 		</AuthStack.Navigator>
 	)
 }
@@ -27,9 +44,33 @@ export const AuthNav = () => {
 
 
 export const AfterAutnNav = () => {
+	const baseStack = createNativeStackNavigator()
+	const theme = useTheme();
 	return (
-		<baseStack.Navigator screenOptions={{ headerShown: false, animation: "fade" }}  >
-			<baseStack.Screen name="Tab" component={TabNav} />
+		<baseStack.Navigator screenOptions={{
+			headerShown: false, animation: "fade", contentStyle: {
+				backgroundColor: theme.background
+			}
+		}}  >
+			<baseStack.Screen name="Tab" component={TopNavBar} options={{
+				headerShown: true,
+				header: () => <CustomHeader />
+			}} />
+			<baseStack.Screen name="profile" component={Profile} options={{
+				headerShown: true,
+				// header: () => <HeaderBack title="profile" />
+				headerStyle: {
+					backgroundColor: theme.background
+				},
+				headerTitleStyle: {
+					fontFamily: fonts.regular,
+					fontSize: fontSize.xxl,
+
+				},
+
+				headerTintColor: theme.textMuted,
+				headerShadowVisible: false
+			}} />
 		</baseStack.Navigator>
 
 	)
@@ -37,17 +78,24 @@ export const AfterAutnNav = () => {
 
 
 
-const TabNav = () => {
-	const theme = useTheme();
-	return (
-		<Tab.Navigator screenOptions={{ headerShown: false }}>
-			<Tab.Screen name="home" component={Home} options={{
-				tabBarStyle: {
-					backgroundColor: theme.background,
-				},
 
-			}} />
-		</Tab.Navigator>
+const TopNavBar = () => {
+	const theme = useTheme();
+	const TopNav = createMaterialTopTabNavigator();
+	return (
+		<TopNav.Navigator screenOptions={{
+			tabBarLabelStyle: { fontSize: 12, fontFamily: fonts.bold, color: theme.text, textTransform: "capitalize" },
+			tabBarItemStyle: { width: 100 },
+			tabBarStyle: { backgroundColor: theme.background },
+			sceneStyle: {
+				backgroundColor: theme.background
+			}
+		}}
+			tabBar={(props) => <MyTabBar {...props} />}
+		>
+			<TopNav.Screen name="home" component={Home} />
+			<TopNav.Screen name="expenses" component={Expenses} />
+		</TopNav.Navigator>
 
 	)
 

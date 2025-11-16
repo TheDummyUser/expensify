@@ -19,10 +19,9 @@ export const signUpAndLoginUser = async ({
 export const checkIfLoggedIn = async () => {
 	const { data, error } = await supabase.auth.getSession()
 
-	if (error) {
-		return { error }
-	}
-	return { data, error }
+	if (error) throw error
+
+	return data
 }
 
 

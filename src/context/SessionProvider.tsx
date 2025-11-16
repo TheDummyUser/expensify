@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { checkIfLoggedIn } from '../services/auth';
 import { ActivityIndicator, View } from 'react-native';
+import { useTheme } from '../utils/theme';
 
 type SessionContextType = {
 	session: Session | null;
@@ -18,12 +19,13 @@ const SessionContext = createContext<SessionContextType>({
 export const useSession = () => useContext(SessionContext);
 
 export const SessionProvider = ({ children }: { children: React.ReactNode }) => {
+	const theme = useTheme();
 	const [session, setSession] = useState<Session | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	const getSession = async () => {
 		setLoading(true);
-		const { data } = await checkIfLoggedIn();
+		const data = await checkIfLoggedIn();
 		if (data?.session) {
 			setSession(data.session);
 		} else {
@@ -39,7 +41,7 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
 	if (loading) {
 		return (
 			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<ActivityIndicator />
+				<ActivityIndicator size={"large"} color={theme.borderStrong} />
 			</View>
 		);
 	}

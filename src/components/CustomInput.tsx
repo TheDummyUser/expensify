@@ -6,6 +6,7 @@ import {
 	TouchableOpacity,
 	Text,
 	Platform,
+	KeyboardTypeOptions,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTheme } from "../utils/theme";
@@ -15,14 +16,14 @@ import Icon from "react-native-vector-icons/Feather";
 interface CustomInputProps {
 	label?: string;
 	placeholder?: string;
-	value?: string;
-	onChangeText?: (text: string) => void;
+	value?: string | number;
+	onChangeText?: (text: string | number) => void;
 	mode?: "text" | "date";
 	leftIcon?: string;
 	rightIcon?: string;
 	onPressRightIcon?: () => void;
 	secureTextEntry?: boolean;
-	keyboardType?: any;
+	keyboardType?: KeyboardTypeOptions;
 	multiline?: boolean;
 	containerStyle?: any;
 	inputStyle?: any;
