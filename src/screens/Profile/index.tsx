@@ -5,6 +5,7 @@ import { useTheme } from "../../utils/theme";
 import CustomInput from "../../components/CustomInput"
 import { useState, useEffect } from "react";
 import { updateUserProfile } from "../../services/profile";
+import CustomButton from "../../components/CustomButton";
 
 const Profile = () => {
 	const { session } = useSession();
@@ -51,35 +52,36 @@ const Profile = () => {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.header}>Edit Profile</Text>
+			<View>
+				<Text style={styles.header}>Edit Profile</Text>
 
-			<CustomInput
-				label="Username"
-				placeholder="Enter username"
-				value={pr.username}
-				onChangeText={(text) => setPr({ ...pr, username: text })}
-				leftIcon="user"
-			/>
+				<CustomInput
+					label="Username"
+					placeholder="Enter username"
+					value={pr.username}
+					onChangeText={(text) => setPr({ ...pr, username: text })}
+					leftIcon="user"
+				/>
 
-			<CustomInput
-				label="Nickname"
-				placeholder="Enter nickname"
-				value={pr.nickname}
-				onChangeText={(text) => setPr({ ...pr, nickname: text })}
-				leftIcon="smile"
-			/>
+				<CustomInput
+					label="Nickname"
+					placeholder="Enter nickname"
+					value={pr.nickname}
+					onChangeText={(text) => setPr({ ...pr, nickname: text })}
+					leftIcon="smile"
+				/>
 
-			<CustomInput
-				label="Bio"
-				placeholder="Write something..."
-				value={pr.bio}
-				onChangeText={(text) => setPr({ ...pr, bio: text })}
-				multiline
-				inputStyle={{ height: 100, paddingTop: 12 }}
-				leftIcon="edit-2"
-			/>
-
-			<Button title="Save Changes" onPress={handleUpdate} />
+				<CustomInput
+					label="Bio"
+					placeholder="Write something..."
+					value={pr.bio}
+					onChangeText={(text) => setPr({ ...pr, bio: text })}
+					multiline
+					inputStyle={{ height: 100, paddingTop: 12 }}
+					leftIcon="edit-2"
+				/>
+			</View>
+			<CustomButton title="update profile" onPress={handleUpdate} />
 		</View>
 	);
 };
@@ -89,7 +91,7 @@ const useThemedStyles = () => {
 	return StyleSheet.create({
 		container: {
 			flex: 1,
-			padding: 16,
+			padding: 16, justifyContent: "space-between"
 		},
 		header: {
 			fontSize: 22,

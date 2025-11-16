@@ -14,12 +14,13 @@ const HeaderBack: React.FC<HeaderBackProps> = ({ title }) => {
 	const styles = useThemedStyles()
 	const navigation = useNavigation()
 	return (
+
 		<View style={styles.container}>
 			<TouchableOpacity onPress={() => navigation.goBack()} style={styles.button} >
 				<Icon name={"keyboard-backspace"} color={styles.text.color} size={styles.text.fontSize} />
 			</TouchableOpacity>
 			<Text style={styles.text}>
-				{title} this it
+				{title}
 			</Text>
 		</View>
 	)
@@ -39,9 +40,7 @@ const useThemedStyles = () => {
 			height: 60,
 			borderBottomWidth: StyleSheet.hairlineWidth,
 			borderColor: theme.border,
-			flex: 1,
 			flexDirection: "row", alignItems: "center", gap: 10,
-			marginTop: 200
 		},
 		text: {
 			color: theme.text,

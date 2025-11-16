@@ -58,18 +58,18 @@ export const AfterAutnNav = () => {
 			}} />
 			<baseStack.Screen name="profile" component={Profile} options={{
 				headerShown: true,
-				// header: () => <HeaderBack title="profile" />
-				headerStyle: {
-					backgroundColor: theme.background
-				},
-				headerTitleStyle: {
-					fontFamily: fonts.regular,
-					fontSize: fontSize.xxl,
+				header: () => <HeaderBack title="profile" />,
+				// headerStyle: {
+				// 	backgroundColor: theme.background
+				// },
+				// headerTitleStyle: {
+				// 	fontFamily: fonts.regular,
+				// 	fontSize: fontSize.xxl,
 
-				},
+				// },
 
-				headerTintColor: theme.textMuted,
-				headerShadowVisible: false
+				// headerTintColor: theme.textMuted,
+				// headerShadowVisible: false
 			}} />
 		</baseStack.Navigator>
 
