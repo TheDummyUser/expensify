@@ -9,6 +9,7 @@ import CustomButton from "../../components/CustomButton"
 import { BottomSheet } from "../../components/BottomSheet"
 import { useCreateMonthlyBudget, useGetBudget } from "../../hooks/useExpences"
 import Icon from "react-native-vector-icons/Feather";
+import CustomDropdown from "../../components/CustomDropdown"
 
 const Home = () => {
 	const [open, setOpen] = useState(false);
@@ -85,6 +86,10 @@ const Home = () => {
 				</View>
 			</BottomSheet>
 
+			<View style={styles.dropdownContainer}>
+				<CustomDropdown label="category" mainComponentStyle={{}} />
+			</View>
+
 			<TouchableOpacity style={styles.plusButton}>
 				<Icon
 					name={"plus"}
@@ -104,6 +109,10 @@ const useThemedStyles = () => {
 	return StyleSheet.create({
 		container: {
 			flex: 1,
+		},
+		dropdownContainer: {
+			alignItems: "center",
+			paddingHorizontal: 10,
 		},
 		errTxt: {
 			color: "red", fontFamily: fonts.regular, fontSize: fontSize.base

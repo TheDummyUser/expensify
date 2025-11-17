@@ -1,193 +1,173 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ViewStyle, ScrollView } from 'react-native';
+import { useTheme } from '../utils/theme';
+import { fonts, fontSize } from '../utils/fonts';
+import Icon from 'react-native-vector-icons/Feather';
 
-const CustomDropdown = ({ data, placeholder = 'Select items...', onSelectionChange }) => {
-	const [selectedItems, setSelectedItems] = useState([]);
-	const [isOpen, setIsOpen] = useState(false);
+interface CustomDropdownProps {
+	label?: string;
+	placeHolder?: string;
+	options?: string[];
+	selected?: string;
+	setSelected?: (value: string) => void;
+	width?: string | number | undefined;
+	mainComponentStyle?: ViewStyle;
+}
 
-	const handleSelect = (key, value) => {
-		const newSelection = [...selectedItems, { key, value }];
-		setSelectedItems(newSelection);
-		if (onSelectionChange) {
-			onSelectionChange(newSelection);
+
+const customOptions = [
+	"food", "books", "entertainment", "travel", "groceries", "other"
+]
+
+
+const CustomDropdown: React.FC<CustomDropdownProps> = ({
+	label,
+	options = customOptions,
+	selected,
+	setSelected,
+	placeHolder = "select a category",
+	width = "100%",
+	mainComponentStyle
+}) => {
+	const style = useThememedStyles();
+	const [open, setOpen] = useState(false);
+
+	const handleSelect = (option: string) => {
+		if (setSelected) {
+			setSelected(option);
 		}
+		setOpen(false);
 	};
-
-	const handleRemove = (keyToRemove) => {
-		const newSelection = selectedItems.filter(item => item.key !== keyToRemove);
-		setSelectedItems(newSelection);
-		if (onSelectionChange) {
-			onSelectionChange(newSelection);
-		}
-	};
-
-	const availableItems = data.filter(
-		item => !selectedItems.some(selected => selected.key === item.key)
-	);
 
 	return (
-		<View style={styles.container}>
-			{/* Selected Items Display */}
-			<View style={styles.selectedContainer}>
-				{selectedItems.length === 0 ? (
-					<Text style={styles.placeholder}>{placeholder}</Text>
-				) : (
-					<View style={styles.selectedItemsWrapper}>
-						{selectedItems.map(item => (
-							<View key={item.key} style={styles.selectedItem}>
-								<Text style={styles.selectedItemText}>{item.value}</Text>
+		<View style={[style.container, mainComponentStyle]}>
+			{label && <View style={{ marginBottom: 5 }}>
+				<Text style={style.label}>
+					{label}
+				</Text>
+			</View>}
+			<View>
+				<TouchableOpacity
+					style={[style.button, { width: width }]}
+					onPress={() => setOpen(!open)}
+				>
+					<Text style={[style.buttonText, selected && style.selectedText]}>
+						{selected || placeHolder}
+					</Text>
+					<Icon
+						name={open ? "chevron-up" : "chevron-down"}
+						size={20}
+						color={style.label.color}
+					/>
+				</TouchableOpacity>
+
+				{open && (
+					<View style={[style.dropdown, { width: width }]}>
+						<ScrollView
+							style={style.scrollView}
+							nestedScrollEnabled
+							showsVerticalScrollIndicator={false}
+						>
+							{options.map((option, index) => (
 								<TouchableOpacity
-									onPress={() => handleRemove(item.key)}
-									style={styles.removeButton}
+									key={index}
+									style={[
+										style.option,
+										selected === option && style.selectedOption
+									]}
+									onPress={() => handleSelect(option)}
 								>
-									<Text style={styles.removeButtonText}>×</Text>
+									<Text style={[
+										style.optionText,
+										selected === option && style.selectedOptionText
+									]}>
+										{option}
+									</Text>
+									{selected === option && (
+										<Icon name="check" size={18} color={style.selectedOptionText.color} />
+									)}
 								</TouchableOpacity>
-							</View>
-						))}
+							))}
+						</ScrollView>
 					</View>
 				)}
 			</View>
-
-			{/* Dropdown Button */}
-			<TouchableOpacity
-				style={styles.dropdownButton}
-				onPress={() => setIsOpen(!isOpen)}
-			>
-				<Text style={styles.dropdownButtonText}>
-					{isOpen ? '▲' : '▼'}
-				</Text>
-			</TouchableOpacity>
-
-			{/* Dropdown Modal */}
-			<Modal
-				visible={isOpen}
-				transparent={true}
-				animationType="fade"
-				onRequestClose={() => setIsOpen(false)}
-			>
-				<TouchableOpacity
-					style={styles.modalOverlay}
-					activeOpacity={1}
-					onPress={() => setIsOpen(false)}
-				>
-					<View style={styles.dropdownList}>
-						<ScrollView>
-							{availableItems.length === 0 ? (
-								<Text style={styles.noItemsText}>No more items available</Text>
-							) : (
-								availableItems.map(item => (
-									<TouchableOpacity
-										key={item.key}
-										style={styles.dropdownItem}
-										onPress={() => {
-											handleSelect(item.key, item.value);
-											setIsOpen(false);
-										}}
-									>
-										<Text style={styles.dropdownItemText}>{item.value}</Text>
-									</TouchableOpacity>
-								))
-							)}
-						</ScrollView>
-					</View>
-				</TouchableOpacity>
-			</Modal>
 		</View>
 	);
 };
 
-const styles = StyleSheet.create({
-	container: {
-		position: 'relative',
-	},
-	selectedContainer: {
-		backgroundColor: '#fff',
-		borderWidth: 1,
-		borderColor: '#ddd',
-		borderRadius: 8,
-		padding: 12,
-		minHeight: 50,
-	},
-	placeholder: {
-		color: '#999',
-		fontSize: 16,
-	},
-	selectedItemsWrapper: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: 8,
-	},
-	selectedItem: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		backgroundColor: '#007AFF',
-		borderRadius: 16,
-		paddingVertical: 6,
-		paddingLeft: 12,
-		paddingRight: 8,
-		marginRight: 8,
-		marginBottom: 8,
-	},
-	selectedItemText: {
-		color: '#fff',
-		fontSize: 14,
-		marginRight: 6,
-	},
-	removeButton: {
-		width: 20,
-		height: 20,
-		borderRadius: 10,
-		backgroundColor: 'rgba(255,255,255,0.3)',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	removeButtonText: {
-		color: '#fff',
-		fontSize: 18,
-		fontWeight: 'bold',
-		lineHeight: 18,
-	},
-	dropdownButton: {
-		position: 'absolute',
-		right: 12,
-		top: 12,
-		padding: 8,
-	},
-	dropdownButtonText: {
-		fontSize: 16,
-		color: '#666',
-	},
-	modalOverlay: {
-		flex: 1,
-		backgroundColor: 'rgba(0,0,0,0.5)',
-		justifyContent: 'center',
-		padding: 20,
-	},
-	dropdownList: {
-		backgroundColor: '#fff',
-		borderRadius: 8,
-		maxHeight: 300,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.25,
-		shadowRadius: 4,
-		elevation: 5,
-	},
-	dropdownItem: {
-		padding: 16,
-		borderBottomWidth: 1,
-		borderBottomColor: '#eee',
-	},
-	dropdownItemText: {
-		fontSize: 16,
-		color: '#333',
-	},
-	noItemsText: {
-		padding: 16,
-		textAlign: 'center',
-		color: '#999',
-		fontSize: 14,
-	},
-});
+
+const useThememedStyles = () => {
+	const theme = useTheme();
+
+	return StyleSheet.create({
+		container: {
+			marginVertical: 5,
+			width: "100%",
+			zIndex: 1000,
+		},
+		label: {
+			fontFamily: fonts.regular,
+			fontSize: fontSize.base,
+			color: theme.text,
+			textTransform: "capitalize"
+		},
+		button: {
+			height: 60,
+			backgroundColor: theme.surface,
+			borderWidth: StyleSheet.hairlineWidth,
+			borderColor: theme.borderStrong,
+			paddingHorizontal: 15,
+			justifyContent: "space-between",
+			alignItems: "center",
+			flexDirection: "row",
+			borderRadius: 16,
+		} as ViewStyle,
+		buttonText: {
+			fontFamily: fonts.regular,
+			fontSize: fontSize.base,
+			color: theme.text + '80',
+			textTransform: "capitalize"
+		},
+		selectedText: {
+			color: theme.text,
+		},
+		dropdown: {
+			marginTop: 5,
+			backgroundColor: theme.surface,
+			borderWidth: StyleSheet.hairlineWidth,
+			borderColor: theme.borderStrong,
+			borderRadius: 16,
+			maxHeight: 200,
+			overflow: "hidden",
+		},
+		scrollView: {
+			maxHeight: 200,
+		},
+		option: {
+			paddingHorizontal: 15,
+			paddingVertical: 15,
+			borderBottomWidth: StyleSheet.hairlineWidth,
+			borderBottomColor: theme.borderStrong,
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+		},
+		selectedOption: {
+			backgroundColor: theme.surface2,
+		},
+		optionText: {
+			fontFamily: fonts.regular,
+			fontSize: fontSize.base,
+			color: theme.text,
+			textTransform: "capitalize"
+		},
+		selectedOptionText: {
+			color: theme.text,
+			fontFamily: fonts.medium || fonts.regular,
+		}
+	})
+}
+
 
 export default CustomDropdown;
