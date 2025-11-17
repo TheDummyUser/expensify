@@ -4,15 +4,26 @@ import { useTheme } from '../utils/theme'
 import { useProfile } from '../hooks/useProfile'
 import { useSession } from '../context/SessionProvider'
 import { useNavigation } from '@react-navigation/native'
+import { supabase } from '../../lib/supabase'
 
 
 const CustomHeader = () => {
 	const styles = useThemedStyles()
-	const { session } = useSession()
+	const { session, refetch } = useSession()
 	const user_id = session?.user?.id;
 	const { data: profile } = useProfile(user_id);
 	const navigate = useNavigation()
 
+
+	const Logut = async () => {
+		const { error } = await supabase.auth.signOut();
+
+		if (error) {
+			throw error?.message
+		} else {
+			refetch()
+		}
+	}
 
 
 
@@ -22,11 +33,18 @@ const CustomHeader = () => {
 				<Text style={[styles.text, { fontSize: fontSize.xxl }]}>
 					Welcome Back,
 				</Text>
-				<TouchableOpacity style={styles.badgebutton} onPress={() => navigate.navigate("profile")}>
-					<Text style={styles.text}>
-						profile
-					</Text>
-				</TouchableOpacity>
+				<View style={{ flexDirection: "row", gap: 5 }}>
+					<TouchableOpacity style={styles.badgebutton} onPress={() => navigate.navigate("profile")}>
+						<Text style={styles.text}>
+							profile
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.badgebutton} onPress={Logut}>
+						<Text style={styles.text}>
+							logout
+						</Text>
+					</TouchableOpacity>
+				</View>
 			</View>
 			<View style={{ marginTop: 8 }}>
 				<Text style={[styles.text, { fontSize: fontSize.large }]}>
@@ -60,7 +78,6 @@ const useThemedStyles = () => {
 		badgebuttonTxt: {
 			fontFamily: fonts.regular,
 			color: theme.textSoft,
-
 		}
 
 	})

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextStyle, View, ViewStyle, KeyboardAvoidingView, TouchableOpacity, ToastAndroid } from "react-native"
+import { StyleSheet, Text, TextStyle, View, ViewStyle, KeyboardAvoidingView, TouchableOpacity } from "react-native"
 import { fonts, fontSize } from "../../utils/fonts";
 import { useTheme } from "../../utils/theme";
 import CustomInput from "../../components/CustomInput";
