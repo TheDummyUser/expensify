@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, Vibration, View } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, Vibration, View } from "react-native"
 import { useTheme } from "../../utils/theme"
 import { useSession } from "../../context/SessionProvider"
 import { fonts, fontSize } from "../../utils/fonts"
@@ -9,7 +9,6 @@ import CustomButton from "../../components/CustomButton"
 import { BottomSheet } from "../../components/BottomSheet"
 import { useCreateMonthlyBudget, useGetBudget } from "../../hooks/useExpences"
 import Icon from "react-native-vector-icons/Feather";
-import CustomDropdown from "../../components/CustomDropdown"
 
 const Home = () => {
 	const [open, setOpen] = useState(false);
@@ -22,14 +21,14 @@ const Home = () => {
 
 	const createBudget = useCreateMonthlyBudget();
 
-	const [budgetAmout, setBudgetAmout] = useState<number>(budget?.budget_amount || 0)
-	const loading = budgetLoading
+	const [budgetAmout, setBudgetAmout] = useState<number>(budget?.budget_amount || 0);
+	const loading = budgetLoading;
 
 	useEffect(() => {
 		if (!loading && budget == null) {
 			setOpen(true)
-		}
-	}, [loading, budget])
+		};
+	}, [loading, budget]);
 
 	return (
 		<View style={styles.container}>
@@ -86,9 +85,14 @@ const Home = () => {
 				</View>
 			</BottomSheet>
 
-			<View style={styles.dropdownContainer}>
-				<CustomDropdown label="category" mainComponentStyle={{}} />
+			<View style={styles.cardContainer}>
+				<Text style={[styles.text, { fontSize: fontSize.large }]}>
+					Top 5 Transactioons of the month
+				</Text>
+
 			</View>
+
+
 
 			<TouchableOpacity style={styles.plusButton}>
 				<Icon
@@ -109,10 +113,6 @@ const useThemedStyles = () => {
 	return StyleSheet.create({
 		container: {
 			flex: 1,
-		},
-		dropdownContainer: {
-			alignItems: "center",
-			paddingHorizontal: 10,
 		},
 		errTxt: {
 			color: "red", fontFamily: fonts.regular, fontSize: fontSize.base
@@ -154,7 +154,19 @@ const useThemedStyles = () => {
 			borderWidth: StyleSheet.hairlineWidth,
 			borderColor: theme.borderStrong,
 			borderCurve: "continuous"
-		}
+		},
+		cardContainer: {
+			marginTop: 3,
+			height: "45%",
+			width: "95%",
+			backgroundColor: theme.surface,
+			borderWidth: StyleSheet.hairlineWidth,
+			borderColor: theme.borderStrong,
+			alignSelf: "center",
+			borderRadius: 16,
+			paddingHorizontal: 10,
+			paddingVertical: 10
+		},
 	})
 }
 

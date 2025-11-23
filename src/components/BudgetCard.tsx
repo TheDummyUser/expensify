@@ -51,7 +51,7 @@ const usethemedStyles = () => {
 
 	return StyleSheet.create({
 		cardContainer: {
-			height: 300,
+			height: "40%",
 			width: "95%",
 			backgroundColor: theme.surface,
 			borderWidth: StyleSheet.hairlineWidth,

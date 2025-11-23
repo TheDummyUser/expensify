@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ViewStyle, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ViewStyle, Modal, FlatList, Pressable } from 'react-native';
 import { useTheme } from '../utils/theme';
 import { fonts, fontSize } from '../utils/fonts';
 import Icon from 'react-native-vector-icons/Feather';
@@ -14,11 +14,9 @@ interface CustomDropdownProps {
 	mainComponentStyle?: ViewStyle;
 }
 
-
 const customOptions = [
 	"food", "books", "entertainment", "travel", "groceries", "other"
 ]
-
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({
 	label,
@@ -39,6 +37,28 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 		setOpen(false);
 	};
 
+	const renderItem = ({ item, index }: { item: string; index: number }) => (
+		<TouchableOpacity
+			style={[
+				style.option,
+				selected === item && style.selectedOption,
+				index === options.length - 1 && { borderBottomWidth: 0 }
+			]}
+			onPress={() => handleSelect(item)}
+			activeOpacity={0.7}
+		>
+			<Text style={[
+				style.optionText,
+				selected === item && style.selectedOptionText
+			]}>
+				{item}
+			</Text>
+			{selected === item && (
+				<Icon name="check" size={18} color={style.selectedOptionText.color} />
+			)}
+		</TouchableOpacity>
+	);
+
 	return (
 		<View style={[style.container, mainComponentStyle]}>
 			{label && <View style={{ marginBottom: 5 }}>
@@ -46,65 +66,63 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 					{label}
 				</Text>
 			</View>}
-			<View>
-				<TouchableOpacity
-					style={[style.button, { width: width }]}
-					onPress={() => setOpen(!open)}
-				>
-					<Text style={[style.buttonText, selected && style.selectedText]}>
-						{selected || placeHolder}
-					</Text>
-					<Icon
-						name={open ? "chevron-up" : "chevron-down"}
-						size={20}
-						color={style.label.color}
-					/>
-				</TouchableOpacity>
 
-				{open && (
-					<View style={[style.dropdown, { width: width }]}>
-						<ScrollView
-							style={style.scrollView}
-							nestedScrollEnabled
+			<TouchableOpacity
+				style={[style.button, { width: width }]}
+				onPress={() => setOpen(true)}
+				activeOpacity={0.7}
+			>
+				<Text style={[style.buttonText, selected && style.selectedText]}>
+					{selected || placeHolder}
+				</Text>
+				<Icon
+					name="chevron-down"
+					size={20}
+					color={style.label.color}
+				/>
+			</TouchableOpacity>
+
+			<Modal
+				visible={open}
+				transparent={true}
+				animationType="fade"
+				onRequestClose={() => setOpen(false)}
+			>
+				<Pressable
+					style={style.modalOverlay}
+					onPress={() => setOpen(false)}
+				>
+					<Pressable style={style.modalContent} onPress={(e) => e.stopPropagation()}>
+						<View style={style.modalHeader}>
+							<Text style={style.modalTitle}>
+								{label || "Select Option"}
+							</Text>
+							<TouchableOpacity onPress={() => setOpen(false)}>
+								<Icon name="x" size={24} color={style.label.color} />
+							</TouchableOpacity>
+						</View>
+
+						<FlatList
+							data={options}
+							renderItem={renderItem}
+							keyExtractor={(item, index) => index.toString()}
+							style={style.flatList}
 							showsVerticalScrollIndicator={false}
-						>
-							{options.map((option, index) => (
-								<TouchableOpacity
-									key={index}
-									style={[
-										style.option,
-										selected === option && style.selectedOption
-									]}
-									onPress={() => handleSelect(option)}
-								>
-									<Text style={[
-										style.optionText,
-										selected === option && style.selectedOptionText
-									]}>
-										{option}
-									</Text>
-									{selected === option && (
-										<Icon name="check" size={18} color={style.selectedOptionText.color} />
-									)}
-								</TouchableOpacity>
-							))}
-						</ScrollView>
-					</View>
-				)}
-			</View>
+							bounces={true}
+						/>
+					</Pressable>
+				</Pressable>
+			</Modal>
 		</View>
 	);
 };
 
-
 const useThememedStyles = () => {
 	const theme = useTheme();
-
 	return StyleSheet.create({
 		container: {
 			marginVertical: 5,
 			width: "100%",
-			zIndex: 1000,
 		},
 		label: {
 			fontFamily: fonts.regular,
@@ -132,26 +150,50 @@ const useThememedStyles = () => {
 		selectedText: {
 			color: theme.text,
 		},
-		dropdown: {
-			marginTop: 5,
+		modalOverlay: {
+			flex: 1,
+			backgroundColor: 'rgba(0, 0, 0, 0.5)',
+			justifyContent: 'center',
+			alignItems: 'center',
+			padding: 20,
+		},
+		modalContent: {
 			backgroundColor: theme.surface,
+			borderRadius: 16,
+			width: '100%',
+			maxWidth: 400,
+			maxHeight: '60%',
+			overflow: 'hidden',
 			borderWidth: StyleSheet.hairlineWidth,
 			borderColor: theme.borderStrong,
-			borderRadius: 16,
-			maxHeight: 200,
-			overflow: "hidden",
 		},
-		scrollView: {
-			maxHeight: 200,
+		modalHeader: {
+			flexDirection: 'row',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+			paddingHorizontal: 20,
+			paddingVertical: 16,
+			borderBottomWidth: StyleSheet.hairlineWidth,
+			borderBottomColor: theme.borderStrong,
+		},
+		modalTitle: {
+			fontFamily: fonts.medium || fonts.regular,
+			fontSize: fontSize.large,
+			color: theme.text,
+			textTransform: "capitalize"
+		},
+		flatList: {
+			maxHeight: 400,
 		},
 		option: {
-			paddingHorizontal: 15,
-			paddingVertical: 15,
+			paddingHorizontal: 20,
+			paddingVertical: 16,
 			borderBottomWidth: StyleSheet.hairlineWidth,
 			borderBottomColor: theme.borderStrong,
 			flexDirection: "row",
 			justifyContent: "space-between",
 			alignItems: "center",
+			backgroundColor: theme.surface,
 		},
 		selectedOption: {
 			backgroundColor: theme.surface2,
@@ -168,6 +210,5 @@ const useThememedStyles = () => {
 		}
 	})
 }
-
 
 export default CustomDropdown;

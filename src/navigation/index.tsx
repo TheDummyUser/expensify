@@ -59,17 +59,6 @@ export const AfterAutnNav = () => {
 			<baseStack.Screen name="profile" component={Profile} options={{
 				headerShown: true,
 				header: () => <HeaderBack title="profile" />,
-				// headerStyle: {
-				// 	backgroundColor: theme.background
-				// },
-				// headerTitleStyle: {
-				// 	fontFamily: fonts.regular,
-				// 	fontSize: fontSize.xxl,
-
-				// },
-
-				// headerTintColor: theme.textMuted,
-				// headerShadowVisible: false
 			}} />
 		</baseStack.Navigator>
 
@@ -95,6 +84,7 @@ const TopNavBar = () => {
 		>
 			<TopNav.Screen name="home" component={Home} />
 			<TopNav.Screen name="expenses" component={Expenses} />
+			<TopNav.Screen name="settings" component={Expenses} />
 		</TopNav.Navigator>
 
 	)
